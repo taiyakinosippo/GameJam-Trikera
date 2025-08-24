@@ -5,60 +5,66 @@ using UnityEngine.Analytics;
 
 public class ImageCheck : MonoBehaviour
 {
-    // ���̉摜�̔ԍ�
+    // 左側の画像の番号
     public int LeftNo;
-    // �E�̉摜�̔ԍ�
+    // 右側の画像の番号
     public int RightNo;
-    // �摜���w��̑g�ݍ��킹������
+    // 画像が正しく組み合わさっているかどうか
     private bool is_same;
-    // �A�������J�E���g�ϐ�
+    // 連続成功カウント用の変数
     public int continuity;
 
-    // �R���{�Ɋւ���X�N���v�g
+    // コンボに関するスクリプト
     public ComboManager ComboManager;
 
-    // �X�R�A�Ɋւ���X�N���v�g
+    // スコアに関するスクリプト
     public test test;
 
+    // ライフ管理用スクリプト
     public LifeManager2 LifeManager2;
+
+    // 中央画像制御用スクリプト
     public CenterImage centerImage;
 
-    [SerializeField] private AudioSource correct;
+    [SerializeField] private AudioSource correct; // 正解時の効果音
 
     public void Continuous()
     {
-        if(!GameManager.instance.end)
+        if (!GameManager.instance.end)
         {
-            // �w��̑g�ݍ��킹�Ȃ�true
+            // 正しい組み合わせなら true
             if (RightNo == 0 && LeftNo == 5 || RightNo == 1 && LeftNo == 6 ||
                RightNo == 2 && LeftNo == 7 || RightNo == 3 && LeftNo == 8 ||
                RightNo == 4 && LeftNo == 9 || RightNo == 5 && LeftNo == 0 ||
                RightNo == 6 && LeftNo == 1 || RightNo == 7 && LeftNo == 2 ||
                RightNo == 8 && LeftNo == 3 || RightNo == 9 && LeftNo == 4)
             {
-                Debug.Log("�����I");
-                Debug.Log($"�R�����:{continuity}");
+                Debug.Log("正解！");
+                Debug.Log($"連続成功数:{continuity}");
                 continuity++;
-                ComboManager.AddCombo();
-                test.SaveTest();
-                correct.Play();
-                centerImage.CorrectImage();
+                ComboManager.AddCombo();    // コンボを加算
+                test.SaveTest();            // スコア更新
+                correct.Play();             // 効果音再生
+                centerImage.CorrectImage(); // 中央画像を正解演出
             }
             else
             {
-                Debug.Log("���s�I");
-                Debug.Log("�R���{��0�ɂȂ�܂���");
-                ComboManager.ResetCombo();
-                LifeManager2.LifeDown();
-                centerImage.MissImage();
+                Debug.Log("不正解！");
+                Debug.Log("コンボが0にリセットされました");
+                ComboManager.ResetCombo();  // コンボをリセット
+                LifeManager2.LifeDown();    // ライフを減らす
+                centerImage.MissImage();    // 中央画像をミス演出
             }
         }
     }
 
+    // 左側の画像番号を設定
     public void LeftImageNo(int i)
     {
         LeftNo = i;
     }
+
+    // 右側の画像番号を設定
     public void RightImageNo(int i)
     {
         RightNo = i;

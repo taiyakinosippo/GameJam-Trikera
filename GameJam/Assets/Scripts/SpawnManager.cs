@@ -7,18 +7,17 @@ using UnityEngine.SceneManagement;
 
 public class CreateManager : MonoBehaviour
 {
-    [SerializeField] public Image[] peacePrefabs;  // ��������v���n�u
-    [SerializeField] private Transform canvas;      // ������̃L�����o�X
-    [SerializeField] private Vector3 spawnPoints; // �����ʒu
-    [SerializeField] private int SpwanFrame;        // �����Ԋu
-    private int spawnTimer = 0;                     // �����p�^�C�}�[
+    [SerializeField] public Image[] peacePrefabs;  // 生成するプレハブ
+    [SerializeField] private Transform canvas;      // 生成先のキャンバス
+    [SerializeField] private Vector3 spawnPoints;   // 生成位置
+    [SerializeField] private int SpwanFrame;        // 生成間隔（フレーム）
+    private int spawnTimer = 0;                     // 生成用タイマー
 
     public ComboManager comboManager;
     public PieceManager2 pieceManager2;
     private ImageCheck ImageCheck;
     private SetZone SetZone;
     public int RandomImage;
-
 
     int combo = 0;
 
@@ -33,12 +32,12 @@ public class CreateManager : MonoBehaviour
     {
         combo = comboManager.comboCount;
 
-        // �R���{���20
+        // コンボの上限は20
         int effectiveCombo = Mathf.Min(combo, 20);
 
         spawnTimer++;
 
-        // �����Ԋu���R���{�ɉ����ĒZ�k�i�ŏ�10�t���[���j
+        // 生成間隔をコンボに応じて短縮（最小10フレーム）
         int interval = Mathf.Max(10, SpwanFrame - effectiveCombo * 20);
 
         if (spawnTimer >= interval)
@@ -47,21 +46,27 @@ public class CreateManager : MonoBehaviour
         }
     }
 
-
     void ShowImage()
     {
-        // �^�C�}�[���Z�b�g
+        // タイマーリセット
         spawnTimer = 0;
-        // �����_���ȃv���n�u�𐶐�
+
+        // ランダムなプレハブを生成
         RandomImage = Random.Range(0, peacePrefabs.Length);
         pieceManager2.SetPiece();
         Image image = Instantiate(peacePrefabs[RandomImage], canvas);
-        ImageCheck.LeftImageNo(RandomImage); // �����_���Ŏ擾�����摜�ԍ��𐳌딻��̃X�N���v�g�ɓn��
-        SetZone.RightImageTransForm(image); // ���W��n��
-                                            // Image�𔽓]������
+
+        // ランダムで取得した画像番号を判定スクリプトに渡す
+        ImageCheck.LeftImageNo(RandomImage);
+
+        // SetZone に座標を渡す
+        SetZone.RightImageTransForm(image);
+
+        // Imageを左右反転させる
         Vector3 scale = image.rectTransform.localScale;
         image.rectTransform.localScale = new Vector3(-scale.x, scale.y, scale.z);
-        // �����ʒu��ݒ�
+
+        // 生成位置を設定
         image.transform.localPosition = spawnPoints;
     }
 

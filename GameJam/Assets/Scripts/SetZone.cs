@@ -6,7 +6,7 @@ using System.Collections;
 public class SetZone : MonoBehaviour, IDropHandler
 {
     private Image target;
-    private float distance = 100f;
+    private float distance = 0.1f;
     private Image image;
     public ImageCheck imagecheck;
 
@@ -15,7 +15,6 @@ public class SetZone : MonoBehaviour, IDropHandler
 
     // 移動の処理
     private float waitTime = 2f;  // 待機時間
-    private float moveDistance = 500f; // 移動距離（右にどれだけ動かすか）
     private float moveDuration = 1f;   // 移動にかかる時間
 
     private bool Hit = false;
@@ -49,19 +48,20 @@ public class SetZone : MonoBehaviour, IDropHandler
         {
              // 相手の位置を取得
             Vector3 targetPosition = target.transform.position;
-        // 自分と相手の距離を取得
-        float dist = Vector3.Distance(transform.position, targetPosition);
-        // 近づいたら関数を呼ぶ
-        if(dist < distance )
-        {
+            // 自分と相手の距離を取得
+            float dist = Vector3.Distance(transform.position, targetPosition);
+            // 近づいたら関数を呼ぶ
+            if (dist < distance)
+            {
                 Destroy(target);
+
                 Debug.Log("近づきました");
-            imagecheck.Continuous();
+                imagecheck.Continuous();
 
                 Hit = true;
-            
-            
-        }
+
+               
+            }
         }
     }
 
@@ -78,19 +78,19 @@ public class SetZone : MonoBehaviour, IDropHandler
     {
         int effectiveCombo = Mathf.Min(combo, 20);
 
-        // 待機時間を短縮（最小0.05秒）
         float adjustedWait = Mathf.Max(0.05f, waitTime - effectiveCombo * 0.08f);
         float adjustedDuration = Mathf.Max(0.1f, moveDuration - effectiveCombo * 0.05f);
 
         // 待機
         yield return new WaitForSeconds(adjustedWait);
 
-        // 移動開始
         RectTransform rect = target.GetComponent<RectTransform>();
         if (rect == null) yield break;
 
         Vector3 startPos = rect.anchoredPosition;
-        Vector3 endPos = startPos + new Vector3(moveDistance, 0, 0);
+
+        // 🎯 Yはそのまま、Xだけ0にする
+        Vector3 endPos = new Vector3(0f, startPos.y, startPos.z);
 
         float elapsed = 0f;
         while (elapsed < adjustedDuration)
@@ -113,23 +113,26 @@ public class SetZone : MonoBehaviour, IDropHandler
         // 待機
         yield return new WaitForSeconds(adjustedWait);
 
-        Vector3 start = transform.position;
-        Vector3 end = start + new Vector3(-moveDistance, 0, 0);
+        RectTransform rect = GetComponent<RectTransform>();
+        if (rect == null) yield break;
+
+        Vector3 startPos = rect.anchoredPosition;
+
+        // 🎯 自分も Xだけ0 にする
+        Vector3 endPos = new Vector3(0f, startPos.y, startPos.z);
 
         float elapsed = 0f;
         while (elapsed < adjustedDuration)
         {
             elapsed += Time.deltaTime;
-            transform.position = Vector3.Lerp(start, end, elapsed / adjustedDuration);
+            rect.anchoredPosition = Vector3.Lerp(startPos, endPos, elapsed / adjustedDuration);
             yield return null;
         }
 
-        RectTransform rect = GetComponent<RectTransform>();
         if (rect != null)
         {
-            rect.anchoredPosition = new Vector2(500f, 100f);
+            rect.anchoredPosition = new Vector2(500f, 100f); 
         }
     }
-
 
 }
