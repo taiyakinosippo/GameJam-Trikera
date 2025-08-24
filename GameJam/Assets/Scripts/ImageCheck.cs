@@ -45,7 +45,7 @@ public class ImageCheck : MonoBehaviour
                 ComboManager.AddCombo();    // コンボを加算
                 test.SaveTest();            // スコア更新
                 correct.Play();             // 効果音再生
-                centerImage.CorrectImage(); // 中央画像を正解演出
+                centerImage.CorrectImage(LeftNo); // 中央画像を正解演出
             }
             else
             {

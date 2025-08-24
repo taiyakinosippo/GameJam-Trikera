@@ -34,7 +34,7 @@ public class SetZone : MonoBehaviour, IDropHandler
             if (draggedImage != null)
             {
                 image.sprite = draggedImage.sprite;
-                image.SetNativeSize(); // サイズもピースに合わせる場合
+                //image.SetNativeSize(); // サイズもピースに合わせる場合
             }
         }
 
